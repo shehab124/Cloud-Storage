@@ -2,11 +2,6 @@ package com.example.Cloud.Storage.controller;
 
 import com.example.Cloud.Storage.model.LoginForm;
 import com.example.Cloud.Storage.service.AuthenticationService;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,24 +29,4 @@ public class LoginController {
         return "login";
     }
 
-//    @PostMapping
-//    public String login(Model model, @ModelAttribute("loginForm") LoginForm loginForm)
-//    {
-//        Authentication authentication = new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword());
-//        try
-//        {
-//            Authentication auth = authenticationService.authenticate(authentication);
-//            if(auth == null)
-//            {
-//                model.addAttribute("invalid", true);
-//                return "login";
-//            }
-//            else
-//                return "home";
-//        }
-//        catch (AuthenticationException e)
-//        {
-//            return "login";
-//        }
-//    }
 }

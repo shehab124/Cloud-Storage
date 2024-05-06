@@ -23,18 +23,20 @@
         <!--navbar-->
         <nav style="clear: right;">
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <a class="nav-item nav-link active" id="nav-files-tab" data-toggle="tab" href="#nav-files"
-                   role="tab" aria-controls="nav-files" aria-selected="true">Files</a>
-                <a class="nav-item nav-link" id="nav-notes-tab" data-toggle="tab" href="#nav-notes" role="tab"
-                   aria-controls="nav-notes" aria-selected="false">Notes</a>
-                <a class="nav-item nav-link" id="nav-credentials-tab" data-toggle="tab" href="#nav-credentials"
-                   role="tab" aria-controls="nav-credentials" aria-selected="false">Credentials</a>
+                <a  th:class="${activeTab == 'nav-files' ? 'nav-item nav-link active' : 'nav-item nav-link'}" id="nav-files-tab" data-toggle="tab" href="?fragment=nav-files"
+                   role="tab" aria-controls="nav-files" aria-selected="${activeTab == 'nav-files'}">Files</a>
+
+                <a  th:class="${activeTab == 'nav-notes' ? 'nav-item nav-link active' : 'nav-item nav-link'}" id="nav-notes-tab" data-toggle="tab" href="?fragment=nav-notes" role="tab"
+                   aria-controls="nav-notes" aria-selected="${activeTab == 'nav-notes'}">Notes</a>
+
+                <a  th:class="${activeTab == 'nav-credentials' ? 'nav-item nav-link active' : 'nav-item nav-link'}" id="nav-credentials-tab" data-toggle="tab" href="?fragment=nav-credentials"
+                   role="tab" aria-controls="nav-credentials" aria-selected="${activeTab == 'nav-credentials'}">Credentials</a>
             </div>
         </nav>
 
-        <div th:switch="${page}" class="tab-content" id="nav-tabContent">
+        <div th:switch="${activeTab}" class="tab-content" id="nav-tabContent">
             <!--Files-->
-            <div th:case="'files'" class="tab-pane fade show active" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab">
+            <div th:case="'nav-files'" th:class="${activeTab == 'nav-files' ? 'tab-pane fade show active' : 'tab-pane fade'}" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab">
                 <form action="#" enctype="multipart/form-data" method="POST">
                     <div class="container">
                         <div class="row" style="margin: 1em;">
@@ -72,7 +74,7 @@
             </div>
 
             <!--Notes-->
-            <div th:case="'notes'" class="tab-pane fade" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
+            <div th:case="'nav-notes'" th:class="${activeTab == 'nav-notes' ? 'tab-pane fade show active' : 'tab-pane fade'}" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
                 <button style="margin: 0.25em;" type="button" class="btn btn-info float-right"
                         onclick="showNoteModal()">
                     + Add a New Note
@@ -88,13 +90,13 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr th:each="note : ${notes}">
                             <td>
                                 <button type="button" class="btn btn-success">Edit</button>
                                 <a class="btn btn-danger">Delete</a>
                             </td>
-                            <th scope="row">Example Note Title</th>
-                            <td>Example Note Description </td>
+                            <th th:text="${note.noteTitle}" scope="row">Example Note Title</th>
+                            <td th:text="${note.noteDescription}">Example Note Description </td>
                         </tr>
                         </tbody>
                     </table>
@@ -105,7 +107,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="noteModalLabel">Note</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <button type="button" onclick="closeNoteModal()" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
@@ -126,7 +128,7 @@
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" onclick="closeNoteModal()" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary"
                                         onclick="$('#noteSubmit').click();">Save changes</button>
                             </div>
@@ -136,7 +138,7 @@
             </div>
 
             <!--Credentials-->
-            <div th:case="'cred'" class="tab-pane fade" id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab">
+            <div th:case="'nav-credentials'" th:class="${activeTab == 'nav-credentials' ? 'tab-pane fade show active' : 'tab-pane fade'}" id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab">
                 <button style="margin: 0.25em;" type="button" class="btn btn-info float-right"
                         onclick="showCredentialModal()">
                     + Add a New Credential
@@ -172,7 +174,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="credentialModalLabel">Credential</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <button type="button" class="close" onclick="closeCredentialModal()" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
@@ -198,7 +200,7 @@
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" onclick="closeCredentialModal()" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary"
                                         onclick="$('#credentialSubmit').click();">Save changes</button>
                             </div>
@@ -210,28 +212,52 @@
     </div>
 </div>
 
-<script th:src="@{/js/jquery-slim.min.js}"></script>
+<!--<script th:src="@{/js/jquery-slim.min.js}"></script>-->
 <script th:src="@{/js/popper.min.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <!--For opening the note modal-->
 <script type="text/javascript">
     // For opening the note modal
-    function showNoteModal(noteId, noteTitle, noteDescription) {
-        $('#note-id').val(noteId ? noteId : '');
-        $('#note-title').val(noteTitle ? noteTitle : '');
-        $('#note-description').val(noteDescription ? noteDescription : '');
-        $('#noteModal').modal('show');
-    }
+function showNoteModal(noteId, noteTitle, noteDescription) {
+    document.getElementById('note-id').value = noteId ? noteId : '';
+    document.getElementById('note-title').value = noteTitle ? noteTitle : '';
+    document.getElementById('note-description').value = noteDescription ? noteDescription : '';
+    document.getElementById('noteModal').classList.add('show');
+    document.getElementById('noteModal').setAttribute('aria-modal', 'true');
+    document.body.classList.add('modal-open');
+    document.getElementById('noteModal').setAttribute('style', 'display: block; padding-right: 15px;');
+}
 
-    // For opening the credentials modal
-    function showCredentialModal(credentialId, url, username, password) {
-        $('#credential-id').val(credentialId ? credentialId : '');
-        $('#credential-url').val(url ? url : '');
-        $('#credential-username').val(username ? username : '');
-        $('#credential-password').val(password ? password : '');
-        $('#credentialModal').modal('show');
-    }
+function closeNoteModal() {
+    document.getElementById('noteModal').classList.remove('show');
+    document.getElementById('noteModal').removeAttribute('aria-modal');
+    document.body.classList.remove('modal-open');
+    document.getElementById('noteModal').removeAttribute('style');
+}
+
+
+// For opening the credentials modal
+function showCredentialModal(credentialId, url, username, password) {
+    document.getElementById('credential-id').value = credentialId ? credentialId : '';
+    document.getElementById('credential-url').value = url ? url : '';
+    document.getElementById('credential-username').value = username ? username : '';
+    document.getElementById('credential-password').value = password ? password : '';
+    document.getElementById('credentialModal').classList.add('show');
+    document.getElementById('credentialModal').setAttribute('aria-modal', 'true');
+    document.body.classList.add('modal-open');
+    document.getElementById('credentialModal').setAttribute('style', 'display: block; padding-right: 15px;');
+}
+
+function closeCredentialModal() {
+    document.getElementById('credentialModal').classList.remove('show');
+    document.getElementById('credentialModal').removeAttribute('aria-modal');
+    document.body.classList.remove('modal-open');
+    document.getElementById('credentialModal').removeAttribute('style');
+}
+
+
 </script>
 </body>
 
