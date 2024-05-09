@@ -35,5 +35,5 @@ CREATE TABLE IF NOT EXISTS CREDENTIALS (
     foreign key (userid) references USERS(userid)
 );
 
---INSERT INTO USERS (userid, username, salt, password, firstname, lastname)
---VALUES (1, 'chehab', 'UlMiOVKnkN7JjvC79fEGpw==', 'aU2Ku2+Q0EAfohmara7drh4CX8iwT9G0pfbYQnV6vXdcMGpOqNgtcmXuRQnVbxTNhg8luymX9c9lng0elxwi5fbHABptCqlHUFmvaZ/ctOGNAJAw71BmT8zKk4zFW42ZlTHTcxDLajjDZrnYwpkxYONODa1nZFAHyYIehQVTXOwkhUSsITqddeE++HYpF5RXjeec4wTYEIGP2S+dvfPouzkPW0v0GSyceK9EWWtBYPE6XJ9sg2rE4xxNBHgBAO0EFuFJCAi9zQtxwjukABkA7Vk6XN0FI5CDFx+Fn2QgskUoS+5JRNIaQQP5aFTI85qm51uBBG4Z8qhp6vfdUXO8Ew==', 'chehab', 'gamal');
+INSERT INTO USERS ( username, salt, password, firstname, lastname)
+VALUES ('chehab', 'UlMiOVKnkN7JjvC79fEGpw==', 'aU2Ku2+Q0EAfohmara7drh4CX8iwT9G0pfbYQnV6vXdcMGpOqNgtcmXuRQnVbxTNhg8luymX9c9lng0elxwi5fbHABptCqlHUFmvaZ/ctOGNAJAw71BmT8zKk4zFW42ZlTHTcxDLajjDZrnYwpkxYONODa1nZFAHyYIehQVTXOwkhUSsITqddeE++HYpF5RXjeec4wTYEIGP2S+dvfPouzkPW0v0GSyceK9EWWtBYPE6XJ9sg2rE4xxNBHgBAO0EFuFJCAi9zQtxwjukABkA7Vk6XN0FI5CDFx+Fn2QgskUoS+5JRNIaQQP5aFTI85qm51uBBG4Z8qhp6vfdUXO8Ew==', 'chehab', 'gamal');

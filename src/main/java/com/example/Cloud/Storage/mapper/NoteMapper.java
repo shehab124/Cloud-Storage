@@ -21,6 +21,9 @@ public interface NoteMapper {
     @Select("SELECT * FROM NOTES WHERE noteid = #{noteId}")
     NoteModel getNote(Integer noteId);
 
+    @Select("SELECT userid FROM NOTES WHERE noteid = #{noteId}")
+    int getUserId(Integer noteId);
+
     @Insert("INSERT INTO NOTES (notetitle, notedescription, userid) VALUES (#{noteTitle}, #{noteDescription}, #{userId})")
     @Options(useGeneratedKeys = true, keyProperty = "noteId")
     int createNote(NoteModel noteModel);
@@ -29,6 +32,6 @@ public interface NoteMapper {
     void updateNote(NoteModel noteModel);
 
     @Delete("DELETE FROM NOTES WHERE noteid = #{noteId}")
-    void deleteNote(Integer noteId);
+    int deleteNote(Integer noteId);
 
 }

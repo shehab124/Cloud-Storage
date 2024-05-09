@@ -5,6 +5,7 @@ import com.example.Cloud.Storage.service.NoteListService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -22,7 +23,7 @@ public class HomeController {
     }
 
     @GetMapping()
-    public String getHome(Model model, @RequestParam(value = "fragment", required = false, defaultValue = "nav-files") String fragment)
+    public String getHome(Model model, NoteModel noteModel, @RequestParam(value = "fragment", required = false, defaultValue = "nav-files") String fragment)
     {
         model.addAttribute("activeTab", fragment);
 
@@ -30,13 +31,11 @@ public class HomeController {
         {
             case "nav-notes":
                 model.addAttribute("notes", noteListService.getAllNotes());
-                ArrayList<NoteModel> noteModels = noteListService.getAllNotes();
-                System.out.println(Arrays.toString(noteModels.toArray()));
                 break;
             default:
                 break;
         }
-
         return "home";
     }
+
 }
