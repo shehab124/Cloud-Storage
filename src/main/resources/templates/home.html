@@ -37,14 +37,14 @@
         <div th:switch="${activeTab}" class="tab-content" id="nav-tabContent">
             <!--Files-->
             <div th:case="'nav-files'" th:class="${activeTab == 'nav-files' ? 'tab-pane fade show active' : 'tab-pane fade'}" id="nav-files" role="tabpanel" aria-labelledby="nav-files-tab">
-                <form action="#" enctype="multipart/form-data" method="POST">
+                <form action="#" th:action="@{'/result/addFile'}" th:object="${fileModel}" enctype="multipart/form-data" method="POST">
                     <div class="container">
                         <div class="row" style="margin: 1em;">
                             <div class="col-sm-2">
-                                <label for="fileUpload">Upload a New File:</label>
+                                <label for="file">Upload a New File:</label>
                             </div>
                             <div class="col-sm-6">
-                                <input type="file" class="form-control-file" id="fileUpload" name="fileUpload">
+                                <input type="file" class="form-control-file" id="file" name="file">
                             </div>
                             <div class="col-sm-4">
                                 <button type="submit" class="btn btn-dark" id="uploadButton">Upload</button>
@@ -61,12 +61,12 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr th:each="file : ${files}" th:id="${file.fileId}">
                             <td>
-                                <a target="_blank" class="btn btn-success">View</a>
-                                <a class="btn btn-danger">Delete</a>
+                                <a th:href="@{'/home/getFile/' + ${file.fileId}}" target="_blank" class="btn btn-success">View</a>
+                                <a th:href="@{'/result/deleteFile/' + ${file.fileId}}" class="btn btn-danger">Delete</a>
                             </td>
-                            <th scope="row">ExampleFile.txt</th>
+                            <th th:text="${file.fileName}" scope="row">ExampleFile.txt</th>
                         </tr>
                         </tbody>
                     </table>
@@ -253,32 +253,29 @@ function closeNoteModal() {
     document.getElementById('noteModal').removeAttribute('style');
 }
 
-        async function showCredentialModal(cred) {
-            var credentialId = cred.getAttribute('data-cred-id');
-            var url = cred.getAttribute('data-cred-url');
-            var username = cred.getAttribute('data-cred-username');
-            var password = cred.getAttribute('data-cred-password');
-
-
-            if (credentialId != null) {
-                response = await fetch('/home/decrypt?credId=' + credentialId, {
-                    method: 'GET'
-                });
-                if (response.ok) {
-                    password = await response.text();
-                    console.log('Decrypted password:', password);
-                }
-            }
-
-                document.getElementById('credential-id').value = credentialId ? credentialId : '';
-                document.getElementById('credential-url').value = url ? url : '';
-                document.getElementById('credential-username').value = username ? username : '';
-                document.getElementById('credential-password').value = password ? password : '';
-                document.getElementById('credentialModal').classList.add('show');
-                document.getElementById('credentialModal').setAttribute('aria-modal', 'true');
-                document.body.classList.add('modal-open');
-                document.getElementById('credentialModal').setAttribute('style', 'display: block; padding-right: 15px;');
-            }
+async function showCredentialModal(cred)
+{
+    var credentialId = cred.getAttribute('data-cred-id');
+    var url = cred.getAttribute('data-cred-url');
+    var username = cred.getAttribute('data-cred-username');
+    var password = cred.getAttribute('data-cred-password');
+    if (credentialId != null) {
+        response = await fetch('/home/decrypt?credId=' + credentialId, {
+            method: 'GET'
+        });
+        if (response.ok) {
+            password = await response.text();
+        }
+    }
+        document.getElementById('credential-id').value = credentialId ? credentialId : '';
+        document.getElementById('credential-url').value = url ? url : '';
+        document.getElementById('credential-username').value = username ? username : '';
+        document.getElementById('credential-password').value = password ? password : '';
+        document.getElementById('credentialModal').classList.add('show');
+        document.getElementById('credentialModal').setAttribute('aria-modal', 'true');
+        document.body.classList.add('modal-open');
+        document.getElementById('credentialModal').setAttribute('style', 'display: block; padding-right: 15px;');
+    }
 
 function closeCredentialModal() {
     document.getElementById('credentialModal').classList.remove('show');
