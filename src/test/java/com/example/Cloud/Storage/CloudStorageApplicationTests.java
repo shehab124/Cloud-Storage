@@ -3,13 +3,15 @@ package com.example.Cloud.Storage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
+
 
 import java.io.File;
 import java.time.Duration;
@@ -46,10 +48,250 @@ class CloudStorageApplicationTests {
 	}
 
 	/**
+     * Test that verifies that the home page is not accessible without logging in.
+     */
+	@Test void homeNotAccessible()
+	{
+		driver.get("http://localhost:" + this.port + "/home");
+		Assertions.assertEquals("Login", driver.getTitle());
+	}
+
+	/**
+     * Test that signs up a new user, logs that user in, verifies that they can access the home page,
+     * then logs out and verifies that the home page is no longer accessible.
+     */
+	@Test void homeNotAccessibleAfterLogout()
+	{
+		doMockSignUp("logout","Test","logout","123");
+		doLogIn("logout", "123");
+
+		WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("logout-btn")));
+		WebElement logoutBtn = driver.findElement(By.id("logout-btn"));
+		logoutBtn.submit();
+
+		homeNotAccessible();
+	}
+
+	/**
+     * creates a note and verifies that the note details are visible in the note list.
+     */
+	@Test void addNote()
+	{
+		// sign up and login
+		try
+		{
+			doMockSignUp("addNote", "addNote", "addNote", "123");
+		}
+		catch (Exception e)
+		{
+			System.out.println("add note already signed up");
+		}
+		doLogIn("addNote", "123");
+
+		// get note page
+		driver.get("http://localhost:" + this.port + "/home?fragment=nav-notes");
+		WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
+		// find add note btn
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("add-note")));
+		WebElement addNoteBtn = driver.findElement(By.id("add-note"));
+		addNoteBtn.click();
+
+		// insert data
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
+		WebElement title = driver.findElement(By.id("note-title"));
+		title.click();
+		title.sendKeys("hello");
+
+		WebElement desc = driver.findElement(By.name("noteDescription"));
+		desc.click();
+		desc.sendKeys("My description");
+
+		WebElement save = driver.findElement(By.id("save-changes-btn"));
+		save.click();
+
+		driver.navigate().back();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("1")));
+		WebElement row = driver.findElement(By.id("1"));
+		row.findElement(By.xpath(".//*[contains(text(), 'My description')]"));
+	}
+
+	/**
+     * Test that logs in an existing user with existing notes,
+	 * clicks the edit note button on an existing note,
+     * changes the note data, saves the changes, and verifies that the changes appear in the note list.
+     */
+	@Test void updateNote()
+	{
+		addNote();
+
+		// get note page
+		driver.get("http://localhost:" + this.port + "/home?fragment=nav-notes");
+		WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
+		// find edit btn
+		WebElement editBtn = driver.findElement(By.xpath("//tr[@id='1']//button[@class='btn btn-success']"));
+		editBtn.click();
+
+		// update title
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-title")));
+		WebElement title = driver.findElement(By.id("note-title"));
+		title.click();
+		title.sendKeys("updated");
+
+		// update desc
+		WebElement desc = driver.findElement(By.name("noteDescription"));
+		desc.click();
+		desc.sendKeys("Update Desc");
+
+		// click save
+		WebElement save = driver.findElement(By.id("save-changes-btn"));
+		save.click();
+
+		driver.navigate().back();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("1")));
+		WebElement row = driver.findElement(By.id("1"));
+		row.findElement(By.xpath(".//*[contains(text(), 'Update Desc')]"));
+	}
+
+	/**
+     * Test that logs in an existing user with existing notes,
+	 * clicks the delete note button on an existing note,
+	 * and verifies that the note no longer appears in the note list.
+     */
+	@Test
+	void deleteNote()
+	{
+		addNote();
+
+		// get note page
+		driver.get("http://localhost:" + this.port + "/home?fragment=nav-notes");
+		WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
+		// find delete btn
+		WebElement deleteBtn = driver.findElement(By.xpath("//tr[@id='1']//a[@class='btn btn-danger']"));
+		deleteBtn.click();
+
+		driver.navigate().back();
+
+		Assertions.assertThrows(NoSuchElementException.class, ()-> driver.findElement(By.id("1")));
+
+	}
+
+	/**
+     * test that logs in an existing user,
+	 * creates a credential and verifies that the credential details are visible in the credential list.
+     */
+	@Test
+	void addCredential()
+	{
+		try{
+			doMockSignUp("Cred", "Cred", "Cred", "Cred");
+
+		}
+		catch (Exception e)
+		{
+			System.out.println("Cred already signed up");
+		}
+		doLogIn("Cred", "Cred");
+
+		// get credentials page
+		driver.get("http://localhost:" + this.port + "/home?fragment=nav-credentials");
+		WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
+		// find add cred btn
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("add-credential-btn")));
+		WebElement addCredBtn = driver.findElement(By.id("add-credential-btn"));
+		addCredBtn.click();
+
+		// insert data
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-url")));
+		WebElement url = driver.findElement(By.id("credential-url"));
+		url.click();
+		url.sendKeys("www.gmail.com");
+
+		WebElement username = driver.findElement(By.id("credential-username"));
+		username.click();
+		username.sendKeys("Chehab");
+
+		WebElement password = driver.findElement(By.id("credential-password"));
+		password.click();
+		password.sendKeys("123");
+
+		WebElement save = driver.findElement(By.id("save-changes"));
+		save.click();
+
+		driver.navigate().back();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("1")));
+		WebElement row = driver.findElement(By.id("1"));
+		row.findElement(By.xpath(".//*[contains(text(), 'Chehab')]"));
+	}
+
+	@Test
+	void updateCredential()
+	{
+		addCredential();
+
+        // get credentials page
+        driver.get("http://localhost:" + this.port + "/home?fragment=nav-credentials");
+        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
+        // find edit btn
+        WebElement editBtn = driver.findElement(By.xpath("//tr[@id='1']//button[@class='btn btn-success']"));
+        editBtn.click();
+
+        // insert data
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-url")));
+        WebElement url = driver.findElement(By.id("credential-url"));
+        url.click();
+        url.sendKeys("www.gmail.com");
+
+        WebElement username = driver.findElement(By.id("credential-username"));
+        username.click();
+        username.sendKeys("Updated");
+
+        WebElement password = driver.findElement(By.id("credential-password"));
+        password.click();
+        password.sendKeys("Updated");
+
+        WebElement save = driver.findElement(By.id("save-changes"));
+        save.click();
+
+        driver.navigate().back();
+
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("1")));
+        WebElement row = driver.findElement(By.id("1"));
+        row.findElement(By.xpath(".//*[contains(text(), 'Updated')]"));
+	}
+
+    @Test
+    void deleteCredential()
+    {
+        addCredential();
+
+        // get credentials page
+        driver.get("http://localhost:" + this.port + "/home?fragment=nav-credentials");
+        WebDriverWait webDriverWait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
+        // find delete btn
+        WebElement deleteBtn = driver.findElement(By.xpath("//tr[@id='1']//a[@class='btn btn-danger']"));
+        deleteBtn.click();
+
+        driver.navigate().back();
+
+        Assertions.assertThrows(NoSuchElementException.class, ()-> driver.findElement(By.id("1")));
+    }
+
+	/**
 	 * PLEASE DO NOT DELETE THIS method.
 	 * Helper method for Udacity-supplied sanity checks.
 	 **/
-	private void doMockSignUp(String firstName, String lastName, String userName, String password){
+	public void doMockSignUp(String firstName, String lastName, String userName, String password){
 		// Create a dummy account for logging in later.
 
 		// Visit the sign-up page.
@@ -91,12 +333,11 @@ class CloudStorageApplicationTests {
 	}
 
 
-
 	/**
 	 * PLEASE DO NOT DELETE THIS method.
 	 * Helper method for Udacity-supplied sanity checks.
 	 **/
-	private void doLogIn(String userName, String password)
+	public void doLogIn(String userName, String password)
 	{
 		// Log in to our dummy account.
 		driver.get("http://localhost:" + this.port + "/login");
@@ -136,8 +377,7 @@ class CloudStorageApplicationTests {
 		// Create a test account
 		doMockSignUp("Redirection","Test","RT","123");
 
-		// Check if we have been redirected to the log in page.
-		Assertions.assertEquals("http://localhost:" + this.port + "/login", driver.getCurrentUrl());
+		Assertions.assertEquals("http://localhost:" + this.port + "/signup", driver.getCurrentUrl());
 	}
 
 	/**

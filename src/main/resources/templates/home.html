@@ -14,7 +14,7 @@
     <!--logout-->
     <div id="logoutDiv">
         <form action="#" method="post" th:action="@{'/logout'}">
-            <button type="submit" class="btn btn-secondary float-right">Logout</button>
+            <button id="logout-btn" type="submit" class="btn btn-secondary float-right">Logout</button>
         </form>
     </div>
 
@@ -41,10 +41,10 @@
                     <div class="container">
                         <div class="row" style="margin: 1em;">
                             <div class="col-sm-2">
-                                <label for="file">Upload a New File:</label>
+                                <label for="fileUpload">Upload a New File:</label>
                             </div>
                             <div class="col-sm-6">
-                                <input type="file" class="form-control-file" id="file" name="file">
+                                <input type="file" class="form-control-file" id="fileUpload" name="fileUpload">
                             </div>
                             <div class="col-sm-4">
                                 <button type="submit" class="btn btn-dark" id="uploadButton">Upload</button>
@@ -75,7 +75,8 @@
 
             <!--Notes-->
             <div th:case="'nav-notes'" th:class="${activeTab == 'nav-notes' ? 'tab-pane fade show active' : 'tab-pane fade'}" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
-                <button style="margin: 0.25em;" type="button" class="btn btn-info float-right"
+                <button id="add-note"
+                        style="margin: 0.25em;" type="button" class="btn btn-info float-right"
                         onclick="showNoteModal(this)">
                     + Add a New Note
                 </button>
@@ -134,7 +135,8 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" onclick="closeNoteModal()" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary"
+                                <button id="save-changes-btn"
+                                        type="button" class="btn btn-primary"
                                         onclick="$('#noteSubmit').click();">Save changes</button>
                             </div>
                         </div>
@@ -145,7 +147,7 @@
             <!--Credentials-->
             <div th:case="'nav-credentials'" th:class="${activeTab == 'nav-credentials' ? 'tab-pane fade show active' : 'tab-pane fade'}" id="nav-credentials" role="tabpanel" aria-labelledby="nav-credentials-tab">
                 <button style="margin: 0.25em;" type="button" class="btn btn-info float-right"
-                        onclick="showCredentialModal(this)">
+                        onclick="showCredentialModal(this)" id="add-credential-btn">
                     + Add a New Credential
                 </button>
 
@@ -214,7 +216,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" onclick="closeCredentialModal()" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary"
+                                <button type="button" class="btn btn-primary" id="save-changes"
                                         onclick="$('#credentialSubmit').click();">Save changes</button>
                             </div>
                         </div>
